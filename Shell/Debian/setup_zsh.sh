@@ -54,11 +54,11 @@ echo "🛠️ 正在设置 oh-my-zsh 自动更新配置..."
 
 # UPDATE_ZSH_DAYS 设置
 if grep -qE '^\s*export UPDATE_ZSH_DAYS=' "$ZSHRC"; then
-    sed -i -E 's/^\s*export UPDATE_ZSH_DAYS=.*/export UPDATE_ZSH_DAYS=13/' "$ZSHRC"
-    echo "✅ 已修改 UPDATE_ZSH_DAYS 为 13"
+    sed -i -E 's/^\s*export UPDATE_ZSH_DAYS=.*/export UPDATE_ZSH_DAYS=1/' "$ZSHRC"
+    echo "✅ 已修改 UPDATE_ZSH_DAYS 为 1"
 else
-    echo 'export UPDATE_ZSH_DAYS=13' >> "$ZSHRC"
-    echo "✅ 已添加 UPDATE_ZSH_DAYS=13"
+    echo 'export UPDATE_ZSH_DAYS=1' >> "$ZSHRC"
+    echo "✅ 已添加 UPDATE_ZSH_DAYS=1"
 fi
 
 # DISABLE_UPDATE_PROMPT 设置
