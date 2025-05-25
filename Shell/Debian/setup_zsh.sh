@@ -93,9 +93,9 @@ else
 fi
 
 # === 6. 立即应用配置 ===
-echo
-echo "🔁 正在执行：source ~/.zshrc"
-source "$ZSHRC"
+#echo
+#echo "🔁 正在执行：source ~/.zshrc"
+#source "$ZSHRC"
 
 # === 最终提示 ===
 echo
