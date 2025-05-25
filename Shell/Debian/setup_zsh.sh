@@ -49,30 +49,45 @@ else
     echo "📥 已克隆 zsh-syntax-highlighting 插件"
 fi
 
-# === 5. 自动更新配置写入 ===
-echo "🛠️ 正在设置 oh-my-zsh 自动更新配置..."
+# === 5. 使用 zstyle 设置 oh-my-zsh 自动更新 ===
+echo "🛠️ 正在设置 oh-my-zsh 自动更新策略 (zstyle)..."
 
-# UPDATE_ZSH_DAYS 设置
-if grep -qE '^\s*export UPDATE_ZSH_DAYS=' "$ZSHRC"; then
-    sed -i -E 's/^\s*export UPDATE_ZSH_DAYS=.*/export UPDATE_ZSH_DAYS=1/' "$ZSHRC"
-    echo "✅ 已修改 UPDATE_ZSH_DAYS 为 1"
+# 设置 zstyle ':omz:update' mode auto
+if grep -qE "^\s*zstyle ':omz:update' mode " "$ZSHRC"; then
+    sed -i -E "s|^\s*zstyle ':omz:update' mode .*|zstyle ':omz:update' mode auto|" "$ZSHRC"
+    echo "✅ 已设置 zstyle auto-update 模式为 auto"
 else
-    echo 'export UPDATE_ZSH_DAYS=1' >> "$ZSHRC"
-    echo "✅ 已添加 UPDATE_ZSH_DAYS=1"
+    MODE_LINE=$(grep -n "Uncomment one of the following lines to change the auto-update behavior" "$ZSHRC" | cut -d: -f1)
+    if [ -n "$MODE_LINE" ]; then
+        INSERT_LINE=$((MODE_LINE + 4))
+        sed -i "${INSERT_LINE}i zstyle ':omz:update' mode auto" "$ZSHRC"
+        echo "✅ 已插入 zstyle auto-update 模式为 auto 到对应注释下方"
+    else
+        echo "zstyle ':omz:update' mode auto" >> "$ZSHRC"
+        echo "⚠️ 注释未找到，已添加 zstyle auto-update 模式配置到文件末尾"
+    fi
 fi
 
-# DISABLE_UPDATE_PROMPT 设置
-if grep -qE '^\s*export DISABLE_UPDATE_PROMPT=' "$ZSHRC"; then
-    sed -i -E 's/^\s*export DISABLE_UPDATE_PROMPT=.*/export DISABLE_UPDATE_PROMPT=true/' "$ZSHRC"
-    echo "✅ 已修改 DISABLE_UPDATE_PROMPT 为 true"
+# 设置 zstyle ':omz:update' frequency 1
+if grep -qE "^\s*zstyle ':omz:update' frequency " "$ZSHRC"; then
+    sed -i -E "s|^\s*zstyle ':omz:update' frequency .*|zstyle ':omz:update' frequency 1|" "$ZSHRC"
+    echo "✅ 已设置 zstyle auto-update 频率为每日 (1 天)"
 else
-    echo 'export DISABLE_UPDATE_PROMPT=true' >> "$ZSHRC"
-    echo "✅ 已添加 DISABLE_UPDATE_PROMPT=true"
+    FREQ_LINE=$(grep -n "Uncomment the following line to change how often to auto-update" "$ZSHRC" | cut -d: -f1)
+    if [ -n "$FREQ_LINE" ]; then
+        INSERT_LINE=$((FREQ_LINE + 1))
+        sed -i "${INSERT_LINE}i zstyle ':omz:update' frequency 1" "$ZSHRC"
+        echo "✅ 已插入 zstyle auto-update 频率为每日 到对应注释下方"
+    else
+        echo "zstyle ':omz:update' frequency 1" >> "$ZSHRC"
+        echo "⚠️ 注释未找到，已添加 zstyle auto-update 频率配置到文件末尾"
+    fi
 fi
 
 # === 最终提示 ===
 echo
-echo "🎉 所有操作完成！"
-echo "👉 如需自动启用插件，请将以下插件添加到 plugins=() 中："
-echo '   zsh-autosuggestions zsh-syntax-highlighting'
-echo "⚠️ 修改已完成，如有问题可恢复 $BACKUP"
+echo "🎉 所有配置已完成！"
+echo "👉 如未自动加载插件，请确保 plugins=() 中包含："
+echo '   zsh-autosuggestions zsh-syntax-highlighting z'
+echo "💡 修改后的配置位于：$ZSHRC"
+echo "🛡️ 如需还原，可使用备份文件：$BACKUP"
