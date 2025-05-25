@@ -31,8 +31,10 @@ else
     echo "➕ 已向 plugins 添加 z 插件"
 fi
 
-# === 4. 克隆 zsh-autosuggestions 插件 ===
+# === 4. 插件安装 ===
 AUTO_DIR="${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
+SYNTAX_DIR="${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
+
 if [ -d "$AUTO_DIR" ]; then
     echo "✅ zsh-autosuggestions 插件已存在，跳过克隆"
 else
@@ -40,8 +42,6 @@ else
     echo "📥 已克隆 zsh-autosuggestions 插件"
 fi
 
-# === 5. 克隆 zsh-syntax-highlighting 插件 ===
-SYNTAX_DIR="${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
 if [ -d "$SYNTAX_DIR" ]; then
     echo "✅ zsh-syntax-highlighting 插件已存在，跳过克隆"
 else
@@ -49,9 +49,30 @@ else
     echo "📥 已克隆 zsh-syntax-highlighting 插件"
 fi
 
+# === 5. 自动更新配置写入 ===
+echo "🛠️ 正在设置 oh-my-zsh 自动更新配置..."
+
+# UPDATE_ZSH_DAYS 设置
+if grep -qE '^\s*export UPDATE_ZSH_DAYS=' "$ZSHRC"; then
+    sed -i -E 's/^\s*export UPDATE_ZSH_DAYS=.*/export UPDATE_ZSH_DAYS=13/' "$ZSHRC"
+    echo "✅ 已修改 UPDATE_ZSH_DAYS 为 13"
+else
+    echo 'export UPDATE_ZSH_DAYS=13' >> "$ZSHRC"
+    echo "✅ 已添加 UPDATE_ZSH_DAYS=13"
+fi
+
+# DISABLE_UPDATE_PROMPT 设置
+if grep -qE '^\s*export DISABLE_UPDATE_PROMPT=' "$ZSHRC"; then
+    sed -i -E 's/^\s*export DISABLE_UPDATE_PROMPT=.*/export DISABLE_UPDATE_PROMPT=true/' "$ZSHRC"
+    echo "✅ 已修改 DISABLE_UPDATE_PROMPT 为 true"
+else
+    echo 'export DISABLE_UPDATE_PROMPT=true' >> "$ZSHRC"
+    echo "✅ 已添加 DISABLE_UPDATE_PROMPT=true"
+fi
+
 # === 最终提示 ===
 echo
 echo "🎉 所有操作完成！"
-echo "👉 如果还未添加 autosuggestions 和 syntax-highlighting 到 plugins，请手动添加："
-echo '   plugins=(... zsh-autosuggestions zsh-syntax-highlighting)'
+echo "👉 如需自动启用插件，请将以下插件添加到 plugins=() 中："
+echo '   zsh-autosuggestions zsh-syntax-highlighting'
 echo "⚠️ 修改已完成，如有问题可恢复 $BACKUP"
