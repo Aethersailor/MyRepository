@@ -23,12 +23,20 @@ else
     echo "🎨 未找到 ZSH_THEME，已添加 \"maran\" 配置"
 fi
 
-# === 3. 添加 z 插件到 plugins=(...)，避免重复 ===
-if grep -qE '^plugins=.*\bz\b' "$ZSHRC"; then
-    echo "✅ 插件 z 已存在于 plugins 列表中，无需添加"
+# === 3. 插件管理：添加 z、autosuggestions、syntax-highlighting，避免重复 ===
+REQUIRED_PLUGINS=(z zsh-autosuggestions zsh-syntax-highlighting)
+if grep -qE '^plugins=\(.*\)' "$ZSHRC"; then
+    CURRENT_LINE=$(grep -E '^plugins=\(.*\)' "$ZSHRC")
+    for plugin in "${REQUIRED_PLUGINS[@]}"; do
+        if ! echo "$CURRENT_LINE" | grep -qw "$plugin"; then
+            CURRENT_LINE=$(echo "$CURRENT_LINE" | sed -E "s/^(plugins=\()([^\)]*)\)/\1\2 $plugin)/")
+        fi
+    done
+    sed -i -E "s/^plugins=\(.*\)/$CURRENT_LINE/" "$ZSHRC"
+    echo "🧩 plugins 行已更新，已确保包含：${REQUIRED_PLUGINS[*]}"
 else
-    sed -i -E 's/^(plugins=\([^\)]*)/\1 z/' "$ZSHRC" && \
-    echo "➕ 已向 plugins 添加 z 插件"
+    echo "plugins=(${REQUIRED_PLUGINS[*]})" >> "$ZSHRC"
+    echo "🧩 plugins 行不存在，已添加：${REQUIRED_PLUGINS[*]}"
 fi
 
 # === 4. 插件安装 ===
@@ -84,10 +92,14 @@ else
     fi
 fi
 
+# === 6. 立即应用配置 ===
+echo
+echo "🔁 正在执行：source ~/.zshrc"
+source "$ZSHRC"
+
 # === 最终提示 ===
 echo
-echo "🎉 所有配置已完成！"
-echo "👉 如未自动加载插件，请确保 plugins=() 中包含："
-echo '   zsh-autosuggestions zsh-syntax-highlighting z'
-echo "💡 修改后的配置位于：$ZSHRC"
+echo "🎉 所有配置已完成并生效！"
+echo "🧩 plugins 列表包含：${REQUIRED_PLUGINS[*]}"
+echo "💡 当前配置文件路径：$ZSHRC"
 echo "🛡️ 如需还原，可使用备份文件：$BACKUP"
